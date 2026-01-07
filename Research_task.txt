@@ -1,0 +1,280 @@
+Research Scientist Internship: Take-Home Assignment
+
+Creating High-Quality Seed Data for Asana RL Environment
+
+Overview
+
+This assignment evaluates your ability to create realistic, high-quality datasets that can serve as seed data for a reinforcement learning environment simulating Asana, a widely-used enterprise project management platform. The work you produce here mirrors a core responsibility of this role: building enterprise-grade datasets that enable meaningful model evaluation and fine-tuning for computer-use AI agents.
+
+Time Allocation: Approximately 6 hours
+Submission Deadline: 7 Jan 2026 11:00 AM
+
+Context
+
+Frontier AI models are increasingly being deployed for computer-use tasks within enterprise applications - navigating interfaces, filling forms, executing workflows, and automating business processes. To evaluate and improve these models on project management workflows, we need RL environments that faithfully simulate platforms like Asana. The quality of these environments depends critically on the realism of the underlying data.
+
+Unrealistic data (e.g., "Task 1," "Task 2," or uniformly distributed due dates) creates shortcuts that models exploit during training but fail to generalize from. Your task is to demonstrate rigorous thinking about what makes Asana data realistic and to implement a methodology that produces genuinely representative seed data.
+
+About Asana
+
+Asana is an enterprise project management and work collaboration platform used by teams to organize, track, and manage their work.
+
+Core Entities in Asana include:
+
+Entity
+
+Description
+
+Workspace / Organization
+
+Top-level container; organizations are for companies with verified email domains
+
+Team
+
+Groups of users within a workspace who collaborate on projects
+
+Project
+
+A collection of tasks organized around a goal, initiative, or workstream
+
+Section
+
+Subdivisions within a project (e.g., "To Do," "In Progress," "Done")
+
+Task
+
+The fundamental unit of work; can have assignees, due dates, descriptions, etc.
+
+Subtask
+
+Tasks nested within a parent task
+
+User
+
+Members of the workspace with profiles and roles
+
+Comment / Story
+
+Activity and discussion on tasks
+
+Custom Field
+
+User-defined fields for tracking additional metadata (priority, effort, status, etc.)
+
+Tag
+
+Labels that can be applied across projects
+
+Attachment
+
+Files attached to tasks
+
+Assignment
+
+You will create a realistic seed dataset simulating a company's Asana workspace. Your simulation should represent a B2B SaaS company with 5000-10000 employees using Asana for product development, marketing, and operations workflows.
+
+Deliverables
+
+1. Documentation (Google Doc)
+
+Your documentation must include the following sections:
+
+Section A: Database Schema
+
+Provide a complete relational schema for your Asana simulation to handle the requirements listed above:
+
+Tables: Define all tables with columns, data types, primary keys, and foreign key relationships. Your schema should minimally include tables representing: Organizations/Workspaces, Teams, Users, Team Memberships, Projects, Sections, Tasks, Subtasks, Comments, Custom Field Definitions, Custom Field Values, Tags, and Task-Tag associations.
+Entity-Relationship Diagram: Include a visual diagram (created with dbdiagram.io, Lucidchart, draw.io, or similar).
+Design Decisions: Explain key schema design choices:
+How do you handle custom fields (which vary by project)?
+How do you represent task hierarchy (tasks vs. subtasks)?
+Section B: Seed Data Methodology
+
+This is the most critical section. For each table, provide a column-by-column breakdown of your data generation strategy:
+
+Example Format:
+
+Table: tasks
+
+Column
+
+Data Type
+
+Source Strategy
+
+Methodology & Justification
+
+task_id
+
+TEXT (UUID)
+
+Generated
+
+UUIDv4 generation to simulate Asana's GID format
+
+name
+
+TEXT
+
+LLM + Heuristics
+
+Task names generated via LLM with prompts tailored to project type. Engineering tasks follow pattern "[Component] - [Action] - [Detail]" based on analysis of 200+ public GitHub issues. Marketing tasks follow "[Campaign] - [Deliverable]" pattern.
+
+description
+
+TEXT
+
+LLM + Templates
+
+Rich text descriptions generated with varying lengths (20% empty, 50% 1-3 sentences, 30% detailed with bullet points). Prompted with project context and realistic formatting patterns observed in Asana templates.
+
+assignee_id
+
+TEXT (FK)
+
+Derived
+
+Assigned based on team membership and workload distribution. 15% of tasks unassigned (per Asana benchmarks). Assignment weighted by user's team and historical assignment patterns.
+
+due_date
+
+DATE
+
+Synthetic + Heuristics
+
+Distribution based on research: 25% within 1 week, 40% within 1 month, 20% 1-3 months out, 10% no due date, 5% overdue. Avoids weekends for 85% of tasks. Clustering around sprint boundaries for Engineering projects.
+
+created_at
+
+TIMESTAMP
+
+Synthetic
+
+Temporal distribution following realistic patterns: higher creation rates Mon-Wed, lower Thu-Fri. Follows company's 6-month history with appropriate growth curve.
+
+completed
+
+BOOLEAN
+
+Synthetic + Heuristics
+
+Completion rate varies by project type: Sprint projects 70-85%, Bug tracking 60-70%, Ongoing projects 40-50%. Older tasks more likely completed.
+
+completed_at
+
+TIMESTAMP
+
+Derived
+
+If completed, timestamp is 1-14 days after creation (following log-normal distribution based on cycle time benchmarks). Always after created_at and before now.
+
+Your methodology must address:
+
+Scraped/Real-World Data Sources: Identify specific, credible sources for realistic data. Examples of what we expect:
+Company names: Scraped from Y Combinator company directory, Crunchbase, or similar
+User names: Generated from census data reflecting realistic demographic distributions
+Project names: Derived from public Asana templates, GitHub project boards, or ProductHunt launches
+Task descriptions: Patterns extracted from public issue trackers, Asana community templates
+Distribution Research: For synthetic columns, cite real-world benchmarks. Examples:
+Task completion rates: Reference Asana's "Anatomy of Work" reports or similar productivity research
+Due date patterns: Cite research on sprint durations, planning horizons
+Team size distributions: Reference industry data on team composition
+LLM Content Generation: Where LLMs generate text content, specify:
+Prompt templates used (include those prompts)
+How you ensure variety (temperature settings, few-shot examples, parameterized prompts)
+Temporal Consistency: Explain how you ensure time-based fields are logically consistent. Enlist different kinds of such scenarios. Example:
+Tasks cannot be completed before creation
+Relational Consistency: Document how you maintain referential integrity and business logic. Example:
+Tasks in a project belong to the correct sections for that project
+2. Code (GitHub Repository)
+
+Your repository should be well-organized and runnable:
+
+Required Structure:
+
+├── README.md                    # Setup instructions, overview, usage
+
+├── requirements.txt             # Python dependencies
+
+├── schema.sql                   # Complete DDL for SQLite
+
+├── .env.examplel  
+
+├── src/
+
+│   ├── main.py                  # Entry point / orchestration
+
+│   ├── scrapers/                # Modules for fetching external data
+
+│   │   └── [scraper modules]
+
+│   ├── generators/              # Data generation logic
+
+│   │   ├── users.py
+
+│   │   ├── projects.py
+
+│   │   ├── tasks.py
+
+│   │   └── [other generators]
+
+│   ├── models/                  # Data models
+
+│   └── utils/                   # Helpers (date generation, LLM calls, etc.)
+
+├── prompts/                     # LLM prompts (if applicable)
+
+└── output/
+
+    └── asana_simulation.sqlite  # Final database
+
+Code Requirements:
+
+Clear setup instructions (ideally runnable with pip install -r requirements.txt and python src/main.py)
+Modular design with separation of concerns
+Appropriate error handling and logging
+Well-commented code explaining non-obvious logic
+Configuration externalized (database size, date ranges, etc. should be adjustable)
+Any required API keys documented (with instructions for obtaining them)
+3. SQLite Database
+
+Your final asana_simulation.sqlite database should contain enough values in all tables to represent a real organization as per above, 
+
+Evaluation Criteria
+
+Criterion
+
+Weight
+
+What We Assess
+
+Data Realism
+
+45%
+
+Does the data resemble a real Asana workspace? Example - Are task names plausible? Do distributions match real-world patterns? Are there appropriate edge cases (overdue tasks, unassigned items, empty projects)?
+
+Methodology Rigor
+
+35%
+
+Is your approach well-researched and evidence-based? Is there clear reasoning for each data generation decision?
+
+Documentation Quality
+
+10%
+
+Is the documentation clear, comprehensive, and well-organized?
+
+Code Quality
+
+10%
+
+Is the code clean, modular, and well-documented? Does it follow software engineering best practices? Is it runnable?
+
+Submission Instructions
+
+Submit the following via following form: https://forms.gle/DEep9xofPAmJYdsK7 
+
+Google Doc Link — Documentation with comment access enabled to anyone with link .
+GitHub Repository Link — Public repo, or private repo with access granted to Naman-Bhalla

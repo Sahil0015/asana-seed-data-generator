@@ -1,0 +1,591 @@
+================================================================================
+ASANA SEED DATA GENERATOR - DOCUMENTATION
+Creating High-Quality Seed Data for Asana RL Environment
+================================================================================
+
+================================================================================
+SECTION A: DATABASE SCHEMA
+================================================================================
+
+A.1 TABLES DEFINITION
+---------------------
+
+1. organizations
+   - org_id      TEXT PRIMARY KEY     (UUID)
+   - name        TEXT NOT NULL        (Company name)
+   - domain      TEXT NOT NULL        (Email domain)
+   - created_at  TIMESTAMP NOT NULL   (Organization creation date)
+
+2. users
+   - user_id     TEXT PRIMARY KEY     (UUID)
+   - org_id      TEXT NOT NULL        (FK -> organizations.org_id)
+   - full_name   TEXT NOT NULL        (Full name)
+   - email       TEXT UNIQUE NOT NULL (Email address)
+   - department  TEXT                 (Department name)
+   - role        TEXT                 (Job role/level)
+   - created_at  TIMESTAMP NOT NULL   (User creation date)
+
+3. teams
+   - team_id     TEXT PRIMARY KEY     (UUID)
+   - org_id      TEXT NOT NULL        (FK -> organizations.org_id)
+   - name        TEXT NOT NULL        (Team name)
+   - department  TEXT                 (Department)
+   - created_at  TIMESTAMP NOT NULL   (Team creation date)
+
+4. team_memberships
+   - id          TEXT PRIMARY KEY     (UUID)
+   - team_id     TEXT NOT NULL        (FK -> teams.team_id)
+   - user_id     TEXT NOT NULL        (FK -> users.user_id)
+   - role        TEXT DEFAULT 'member'(Membership role)
+   - joined_at   TIMESTAMP NOT NULL   (Join date)
+
+5. projects
+   - project_id  TEXT PRIMARY KEY     (UUID)
+   - team_id     TEXT NOT NULL        (FK -> teams.team_id)
+   - owner_id    TEXT                 (FK -> users.user_id)
+   - name        TEXT NOT NULL        (Project name)
+   - description TEXT                 (Project description)
+   - project_type TEXT                (sprint/kanban/campaign/operations)
+   - status      TEXT DEFAULT 'active'(active/completed/on_hold)
+   - created_at  TIMESTAMP NOT NULL   (Creation date)
+   - due_date    DATE                 (Target completion date)
+
+6. sections
+   - section_id  TEXT PRIMARY KEY     (UUID)
+   - project_id  TEXT NOT NULL        (FK -> projects.project_id)
+   - name        TEXT NOT NULL        (Section name)
+   - order_index INTEGER NOT NULL     (Display order)
+   - created_at  TIMESTAMP NOT NULL   (Creation date)
+
+7. tasks
+   - task_id       TEXT PRIMARY KEY   (UUID)
+   - project_id    TEXT NOT NULL      (FK -> projects.project_id)
+   - section_id    TEXT               (FK -> sections.section_id)
+   - parent_task_id TEXT              (FK -> tasks.task_id for subtasks)
+   - assignee_id   TEXT               (FK -> users.user_id)
+   - name          TEXT NOT NULL      (Task name)
+   - description   TEXT               (Task description)
+   - completed     BOOLEAN DEFAULT 0  (Completion status)
+   - priority      TEXT               (high/medium/low)
+   - due_date      DATE               (Due date)
+   - created_at    TIMESTAMP NOT NULL (Creation date)
+   - completed_at  TIMESTAMP          (Completion date)
+
+8. comments
+   - comment_id  TEXT PRIMARY KEY     (UUID)
+   - task_id     TEXT NOT NULL        (FK -> tasks.task_id)
+   - author_id   TEXT NOT NULL        (FK -> users.user_id)
+   - content     TEXT NOT NULL        (Comment text)
+   - created_at  TIMESTAMP NOT NULL   (Creation date)
+
+9. tags (in schema, not currently generated)
+   - tag_id      TEXT PRIMARY KEY     (UUID)
+   - org_id      TEXT NOT NULL        (FK -> organizations.org_id)
+   - name        TEXT NOT NULL        (Tag name)
+   - color       TEXT                 (Hex color)
+   - created_at  TIMESTAMP NOT NULL   (Creation date)
+
+10. task_tags (in schema, not currently generated)
+    - task_id     TEXT NOT NULL       (FK -> tasks.task_id)
+    - tag_id      TEXT NOT NULL       (FK -> tags.tag_id)
+    - created_at  TIMESTAMP NOT NULL  (Association date)
+    - PRIMARY KEY (task_id, tag_id)
+
+11. custom_field_definitions (in schema, not currently generated)
+    - field_id    TEXT PRIMARY KEY    (UUID)
+    - project_id  TEXT NOT NULL       (FK -> projects.project_id)
+    - name        TEXT NOT NULL       (Field name)
+    - field_type  TEXT NOT NULL       (text/number/dropdown/date)
+    - created_at  TIMESTAMP NOT NULL  (Creation date)
+
+12. custom_field_values (in schema, not currently generated)
+    - id          TEXT PRIMARY KEY    (UUID)
+    - task_id     TEXT NOT NULL       (FK -> tasks.task_id)
+    - field_id    TEXT NOT NULL       (FK -> custom_field_definitions.field_id)
+    - value       TEXT                (Field value)
+    - created_at  TIMESTAMP NOT NULL  (Creation date)
+
+
+A.2 ENTITY-RELATIONSHIP DIAGRAM
+-------------------------------
+
++----------------+       +----------------+       +----------------+
+| organizations  |<------| users          |       | teams          |
++----------------+  1:N  +----------------+       +----------------+
+| org_id (PK)    |       | user_id (PK)   |       | team_id (PK)   |
+| name           |       | org_id (FK)    |------>| org_id (FK)    |
+| domain         |       | full_name      |       | name           |
+| created_at     |       | email          |       | department     |
++----------------+       | department     |       | created_at     |
+                         | role           |       +-------+--------+
+                         | created_at     |               |
+                         +-------+--------+               |
+                                 |                        |
+                                 |                        |
+                    +------------+------------+           |
+                    |                         |           |
+                    V                         V           V
+         +------------------+      +--------------------+
+         | team_memberships |      | projects           |
+         +------------------+      +--------------------+
+         | id (PK)          |      | project_id (PK)    |
+         | team_id (FK)     |<-----| team_id (FK)       |
+         | user_id (FK)     |      | owner_id (FK)      |----+
+         | role             |      | name               |    |
+         | joined_at        |      | project_type       |    |
+         +------------------+      | status             |    |
+                                   | created_at         |    |
+                                   | due_date           |    |
+                                   +---------+----------+    |
+                                             |               |
+                                             V               |
+                                   +------------------+      |
+                                   | sections         |      |
+                                   +------------------+      |
+                                   | section_id (PK)  |      |
+                                   | project_id (FK)  |      |
+                                   | name             |      |
+                                   | order_index      |      |
+                                   | created_at       |      |
+                                   +---------+--------+      |
+                                             |               |
+                                             V               |
+                                   +-------------------+     |
+                                   | tasks             |<----+
+                                   +-------------------+
+                                   | task_id (PK)      |
+                                   | project_id (FK)   |
+                                   | section_id (FK)   |
+                                   | parent_task_id(FK)|---> (self-reference)
+                                   | assignee_id (FK)  |---> users
+                                   | name              |
+                                   | completed         |
+                                   | priority          |
+                                   | due_date          |
+                                   | created_at        |
+                                   | completed_at      |
+                                   +---------+---------+
+                                             |
+                                             V
+                                   +-------------------+
+                                   | comments          |
+                                   +-------------------+
+                                   | comment_id (PK)   |
+                                   | task_id (FK)      |
+                                   | author_id (FK)    |---> users
+                                   | content           |
+                                   | created_at        |
+                                   +-------------------+
+
+
+A.3 KEY DESIGN DECISIONS
+------------------------
+
+1. Task Hierarchy (Tasks vs. Subtasks):
+   - Subtasks are handled via self-referencing foreign key (parent_task_id)
+   - When parent_task_id IS NULL, it's a top-level task
+   - When parent_task_id IS NOT NULL, it's a subtask
+   - This allows unlimited nesting depth while keeping a single table
+   - Simpler queries and consistent task properties across all levels
+
+2. Custom Fields (vary by project):
+   - Separated into two tables: definitions and values
+   - custom_field_definitions are project-scoped (FK to project)
+   - custom_field_values link tasks to their field values
+   - Supports multiple field types: text, number, dropdown, date
+   - Flexible schema allows different projects to have different fields
+
+3. Team-Project-User Relationships:
+   - Projects belong to teams (not directly to users)
+   - Users belong to teams via team_memberships
+   - Project owners are tracked via owner_id FK
+   - Enables realistic permission modeling
+
+4. UUID for All Primary Keys:
+   - Simulates Asana's GID format
+   - Enables distributed generation without conflicts
+   - 32-character hex strings (UUIDv4)
+
+
+================================================================================
+SECTION B: SEED DATA METHODOLOGY
+================================================================================
+
+B.1 TABLE: organizations
+------------------------
+| Column     | Data Type | Source Strategy | Methodology & Justification                              |
+|------------|-----------|-----------------|----------------------------------------------------------|
+| org_id     | TEXT      | Generated       | UUIDv4 to simulate Asana's GID format                    |
+| name       | TEXT      | Configured      | "TechFlow Solutions" - realistic B2B SaaS company name   |
+| domain     | TEXT      | Configured      | "techflow.io" - matches company name, .io for tech       |
+| created_at | TIMESTAMP | Static          | "2018-03-15" - company founded ~6 years ago, realistic   |
+
+
+B.2 TABLE: users
+----------------
+| Column     | Data Type | Source Strategy      | Methodology & Justification                                    |
+|------------|-----------|----------------------|----------------------------------------------------------------|
+| user_id    | TEXT      | Generated            | UUIDv4 generation                                              |
+| org_id     | TEXT      | Derived              | Links to parent organization                                   |
+| full_name  | TEXT      | Faker Library        | Python Faker generates realistic names with demographic variety|
+| email      | TEXT      | Derived              | Pattern: firstname.lastname_index@techflow.io                  |
+| department | TEXT      | Weighted Random      | Distribution based on typical SaaS company ratios (see below)  |
+| role       | TEXT      | Weighted Random      | Pyramid structure: more ICs than managers (see below)          |
+| created_at | TIMESTAMP | Synthetic            | Random dates 30-365 days ago, simulating employee tenure       |
+
+Department Distribution (Based on typical B2B SaaS):
+- Engineering: 35% (largest for tech company)
+- Sales: 20%
+- Marketing: 10%
+- Product: 8%
+- Customer Success: 8%
+- Design: 5%
+- Operations: 5%
+- HR: 4%
+- Finance: 3%
+- Legal: 2%
+
+Role Distribution (Organizational Pyramid):
+- Executive: 1%
+- Director: 2%
+- Manager: 8%
+- Senior IC: 25%
+- IC: 54%
+- Intern: 10%
+
+
+B.3 TABLE: teams
+----------------
+| Column     | Data Type | Source Strategy | Methodology & Justification                              |
+|------------|-----------|-----------------|----------------------------------------------------------|
+| team_id    | TEXT      | Generated       | UUIDv4 generation                                        |
+| org_id     | TEXT      | Derived         | Links to parent organization                             |
+| name       | TEXT      | Template        | Format: "{Department} - {SubTeam}" e.g. "Engineering - Backend"|
+| department | TEXT      | Derived         | Matches team's department                                |
+| created_at | TIMESTAMP | Synthetic       | Random dates 100-300 days ago                            |
+
+Team Names by Department (realistic sub-teams):
+- Engineering: Platform, Backend, Frontend, Mobile, DevOps, QA, Security, Data
+- Sales: Enterprise, SMB, SDR, Solutions, Partnerships
+- Marketing: Content, Demand Gen, Brand, Product Marketing, Events
+- Product: Core Product, Growth, Platform, Analytics
+- Customer Success: Support Tier 1, Support Tier 2, Success, Onboarding
+- Design: Product Design, Brand Design, UX Research
+- Operations: IT, Rev Ops, Data Ops
+- HR: Recruiting, People Ops, L&D
+- Finance: FP&A, Accounting, Procurement
+- Legal: Legal, Compliance
+
+Total: 78 teams across 10 departments
+
+
+B.4 TABLE: team_memberships
+---------------------------
+| Column    | Data Type | Source Strategy | Methodology & Justification                              |
+|-----------|-----------|-----------------|----------------------------------------------------------|
+| id        | TEXT      | Generated       | UUIDv4 generation                                        |
+| team_id   | TEXT      | Derived         | Links to parent team                                     |
+| user_id   | TEXT      | Derived         | Links to user, constrained by department matching        |
+| role      | TEXT      | Static          | Default "member" for simplicity                          |
+| joined_at | TIMESTAMP | Synthetic       | Random dates 50-200 days ago, after user creation        |
+
+Assignment Logic:
+- Users assigned only to teams in their department
+- Each team gets 20-100 members (random within department pool)
+- Ensures referential integrity and realistic team composition
+
+
+B.5 TABLE: projects
+-------------------
+| Column       | Data Type | Source Strategy | Methodology & Justification                              |
+|--------------|-----------|-----------------|----------------------------------------------------------|
+| project_id   | TEXT      | Generated       | UUIDv4 generation                                        |
+| team_id      | TEXT      | Random          | Randomly assigned to existing teams                       |
+| owner_id     | TEXT      | Derived         | First team member becomes owner                          |
+| name         | TEXT      | Faker + Template| "{Department} - {BusinessPhrase}" via Faker.bs()         |
+| project_type | TEXT      | Weighted Random | sprint/kanban/campaign/operations (~25% each)            |
+| status       | TEXT      | Weighted Random | 60% active, 20% completed, 20% on_hold                   |
+| created_at   | TIMESTAMP | Synthetic       | Random dates 10-180 days ago                             |
+| due_date     | DATE      | Derived         | 30-90 days after created_at                              |
+
+Project Types:
+- sprint: Used by Engineering for agile sprints
+- kanban: General workflow boards
+- campaign: Marketing campaigns with launch dates
+- operations: Ongoing operational work
+
+
+B.6 TABLE: sections
+-------------------
+| Column      | Data Type | Source Strategy | Methodology & Justification                              |
+|-------------|-----------|-----------------|----------------------------------------------------------|
+| section_id  | TEXT      | Generated       | UUIDv4 generation                                        |
+| project_id  | TEXT      | Derived         | Links to parent project                                  |
+| name        | TEXT      | Template        | Based on project_type (see templates below)              |
+| order_index | INTEGER   | Sequential      | 0-based index for display order                          |
+| created_at  | TIMESTAMP | Derived         | Same as parent project's created_at                      |
+
+Section Templates by Project Type:
+- sprint: Backlog, To Do, In Progress, Review, Done (5 sections)
+- kanban: To Do, In Progress, Done (3 sections)
+- campaign: Planning, In Progress, Review, Launched (4 sections)
+- default: To Do, In Progress, Done (3 sections)
+
+
+B.7 TABLE: tasks
+----------------
+| Column         | Data Type | Source Strategy    | Methodology & Justification                                     |
+|----------------|-----------|--------------------|-----------------------------------------------------------------|
+| task_id        | TEXT      | Generated          | UUIDv4 generation                                               |
+| project_id     | TEXT      | Derived            | Links to parent project                                         |
+| section_id     | TEXT      | Derived + Logic    | Completed tasks -> last section (Done); others -> random section|
+| parent_task_id | TEXT      | Conditional        | NULL for top-level tasks, parent's ID for subtasks              |
+| assignee_id    | TEXT      | Weighted Random    | 85% assigned (from team members), 15% unassigned               |
+| name           | TEXT      | Template/LLM       | Department-specific templates or LLM-generated (see below)      |
+| completed      | BOOLEAN   | Weighted Random    | 60% completed (realistic completion rate)                       |
+| priority       | TEXT      | Random             | high/medium/low/null equally distributed                        |
+| due_date       | DATE      | Derived            | 7-60 days after created_at                                      |
+| created_at     | TIMESTAMP | Synthetic          | Random dates 5-150 days ago                                     |
+| completed_at   | TIMESTAMP | Derived            | 1-30 days after created_at (only if completed)                  |
+
+Task Name Generation Strategy:
+- Default: Template-based with department-specific patterns
+- Optional: LLM-generated names via OpenAI API (USE_LLM=true)
+
+Template Examples by Department:
+Engineering:
+  - "Implement {feature} API endpoint"
+  - "Fix bug in {component}"
+  - "Refactor {module} for performance"
+  - "Add unit tests for {feature}"
+  
+Marketing:
+  - "Create blog post about {topic}"
+  - "Design email campaign for {campaign}"
+  - "Update landing page copy"
+  
+Sales:
+  - "Follow up with {company}"
+  - "Prepare demo for {prospect}"
+  - "Update CRM records"
+  
+Product:
+  - "Write PRD for {feature}"
+  - "Analyze user feedback"
+  - "Prioritize backlog items"
+
+Placeholder Values:
+- {feature}: user auth, dashboard, notifications, search, payments, analytics, reports
+- {component}: login flow, checkout, data pipeline, API gateway, cache layer
+- {module}: auth service, billing module, notification system, user service
+- {topic}: product updates, industry trends, customer success stories
+- {campaign}: Q1 launch, product release, holiday promo
+- {company}: Acme Corp, TechStart Inc, Global Systems
+
+LLM Prompt Template (when enabled):
+"""
+Generate {count} realistic task names for a {department} team 
+working on a {project_type} project at a B2B SaaS company.
+Return only the task names, one per line. Make them specific and realistic.
+"""
+- Model: gpt-4o-mini (configurable via LLM_MODEL)
+- Temperature: 0.8 (for variety)
+- Cached per department (20 names per batch)
+
+
+B.8 TABLE: comments
+-------------------
+| Column     | Data Type | Source Strategy | Methodology & Justification                              |
+|------------|-----------|-----------------|----------------------------------------------------------|
+| comment_id | TEXT      | Generated       | UUIDv4 generation                                        |
+| task_id    | TEXT      | Derived         | Links to parent task                                     |
+| author_id  | TEXT      | Random          | Random team member (ensures relational consistency)      |
+| content    | TEXT      | Template        | Realistic comment templates (see below)                  |
+| created_at | TIMESTAMP | Derived         | 1-72 hours after task creation                           |
+
+Comment Templates:
+- "Looking good, let's move forward."
+- "Can you provide more details on this?"
+- "Updated the status - ready for review."
+- "Blocked on dependencies, need input."
+- "Great progress on this task!"
+- "Let's discuss in our next sync."
+- "Added more context to the description."
+- "This is now complete."
+
+Generation Rate: 30% of tasks have comments
+
+
+B.9 SUBTASKS
+------------
+Subtasks are stored in the same tasks table with parent_task_id set.
+
+| Attribute      | Strategy                                                      |
+|----------------|---------------------------------------------------------------|
+| Generation     | 20% of parent tasks have 1-4 subtasks                         |
+| Naming         | "Subtask {n}: {parent_name_truncated}"                        |
+| Inheritance    | Inherits assignee, completed status, timestamps from parent   |
+| Section        | Same section as parent task                                   |
+
+
+================================================================================
+B.10 TEMPORAL CONSISTENCY
+================================================================================
+
+All date/time fields maintain logical consistency:
+
+1. Organization -> Users:
+   - User created_at is always after organization created_at
+
+2. Teams -> Team Memberships:
+   - joined_at is 50-200 days ago
+   - User must exist before joining team
+
+3. Projects -> Sections:
+   - Section created_at equals project created_at (created together)
+
+4. Tasks:
+   - created_at: 5-150 days ago (within project lifespan)
+   - due_date: 7-60 days after created_at
+   - completed_at: only set if completed=true
+   - completed_at: 1-30 days after created_at (never before)
+   - completed_at: always before current time
+
+5. Comments:
+   - created_at: 1-72 hours after parent task's created_at
+
+6. Subtasks:
+   - created_at and completed_at inherit from parent task
+
+
+================================================================================
+B.11 RELATIONAL CONSISTENCY
+================================================================================
+
+1. Users belong to teams in their department:
+   - team_memberships only links users to teams with matching department
+
+2. Tasks belong to correct sections:
+   - Tasks reference sections that belong to the same project
+
+3. Assignees are team members:
+   - Task assignees are selected from team_memberships of the project's team
+
+4. Comments have valid authors:
+   - Comment author_id is selected from team members of the task's project
+
+5. Subtasks belong to same project:
+   - Subtasks inherit project_id and section_id from parent task
+
+6. Project owners are team members:
+   - owner_id is selected from team_memberships of the project's team
+
+
+================================================================================
+B.12 DATA SOURCES AND RESEARCH
+================================================================================
+
+Scraped/Real-World Data Sources:
+1. User Names: Faker library with seed for reproducibility
+   - Provides demographically diverse names
+   - Source: Faker's en_US locale
+
+2. Department Distribution: Based on industry research
+   - Reference: LinkedIn workforce analytics for B2B SaaS companies
+   - Engineering-heavy (35%) typical for tech companies
+
+3. Team Structure: Common organizational patterns
+   - Based on publicly available org charts from companies like Asana, Atlassian
+
+Distribution Research:
+1. Task Completion Rate: 60%
+   - Reference: Asana's "Anatomy of Work" report suggests 40-70% completion
+   - Mid-range value chosen for realism
+
+2. Unassigned Tasks: 15%
+   - Reference: Industry benchmarks suggest 10-20% unassigned tasks
+
+3. Subtask Rate: 20%
+   - Reference: Asana community data on task complexity
+
+4. Comment Rate: 30%
+   - Reference: Typical collaboration patterns in project management
+
+
+================================================================================
+SECTION C: CONFIGURATION & SCALE
+================================================================================
+
+Configurable Parameters (in src/config.py):
+
+| Parameter         | Default Value | Description                          |
+|-------------------|---------------|--------------------------------------|
+| NUM_USERS         | 7500          | Total employees (target: 5000-10000) |
+| NUM_TEAMS         | 78            | Total teams across departments       |
+| NUM_PROJECTS      | 500           | Total projects                       |
+| TASKS_PER_PROJECT | (30, 100)     | Min/max tasks per project            |
+| SUBTASK_CHANCE    | 0.2           | 20% of tasks have subtasks           |
+| COMMENT_CHANCE    | 0.3           | 30% of tasks have comments           |
+| COMPLETION_RATE   | 0.6           | 60% of tasks are completed           |
+| UNASSIGNED_RATE   | 0.15          | 15% of tasks are unassigned          |
+
+Generated Data Volume:
+- 1 Organization
+- 7,500 Users
+- 78 Teams
+- ~7,500+ Team Memberships
+- 500 Projects
+- ~2,000 Sections
+- ~30,000+ Tasks (including subtasks)
+- ~9,000+ Comments
+
+
+================================================================================
+SECTION D: LLM INTEGRATION (OPTIONAL)
+================================================================================
+
+The system supports optional LLM-generated task names:
+
+Enable LLM:
+1. Set USE_LLM=true in .env
+2. Add OPENAI_API_KEY=sk-... in .env
+3. Optionally set LLM_MODEL=gpt-4o-mini (default)
+
+Disable LLM:
+1. Set USE_LLM=false (default) or remove the variable
+2. System falls back to template-based generation
+
+LLM Prompt Used:
+"""
+Generate {count} realistic task names for a {department} team 
+working on a {project_type} project at a B2B SaaS company.
+Return only the task names, one per line. Make them specific and realistic.
+"""
+
+Parameters:
+- Model: gpt-4o-mini (configurable)
+- Temperature: 0.8 (ensures variety)
+- Max Tokens: 500
+- Caching: 20 names cached per department (reduces API calls)
+
+
+================================================================================
+SECTION E: RUNNING THE PROJECT
+================================================================================
+
+Setup:
+1. pip install -r requirements.txt
+
+Generate Data:
+2. python src/main.py
+   Output: output/asana_simulation.sqlite
+
+Export to CSV:
+3. python src/export_data.py
+   Output: output/*.csv (8 files: org, users, teams, team_memberships, 
+           projects, sections, tasks, comments)
+
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================
