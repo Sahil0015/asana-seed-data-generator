@@ -1,41 +1,41 @@
 team_id,org_id,name,department,created_at,member_count
-19266f47-16b,ddf1508a-742,Customer Success - Onboarding,Customer Success,2025-08-23 10:13:23,50
-ea48aae5-02e,ddf1508a-742,Customer Success - Success,Customer Success,2025-06-04 10:13:23,80
-447c3970-766,ddf1508a-742,Customer Success - Support Tier 1,Customer Success,2025-04-13 10:13:23,99
-4f88a4bf-228,ddf1508a-742,Customer Success - Support Tier 2,Customer Success,2025-09-25 10:13:23,39
-8a12194e-da8,ddf1508a-742,Design - Brand Design,Design,2025-05-23 10:13:23,80
-30b05e5d-432,ddf1508a-742,Design - Product Design,Design,2025-05-20 10:13:23,95
-9574e848-5c2,ddf1508a-742,Design - UX Research,Design,2025-04-14 10:13:23,43
-8a2d6e6a-eed,ddf1508a-742,Engineering - Backend,Engineering,2025-05-20 10:13:23,69
-9ea4e08c-62c,ddf1508a-742,Engineering - Data,Engineering,2025-08-22 10:13:23,66
-9e9fece7-309,ddf1508a-742,Engineering - DevOps,Engineering,2025-06-05 10:13:23,61
-a43e8fb1-de2,ddf1508a-742,Engineering - Frontend,Engineering,2025-04-19 10:13:23,57
-28b93a7f-d85,ddf1508a-742,Engineering - Mobile,Engineering,2025-09-13 10:13:23,20
-a8c6983a-5a6,ddf1508a-742,Engineering - Platform,Engineering,2025-09-21 10:13:23,73
-a8ad4827-42d,ddf1508a-742,Engineering - QA,Engineering,2025-08-20 10:13:23,91
-488ab045-b1f,ddf1508a-742,Engineering - Security,Engineering,2025-06-19 10:13:23,94
-99c15e7e-b12,ddf1508a-742,Finance - Accounting,Finance,2025-04-21 10:13:23,86
-7ca7db20-8b6,ddf1508a-742,Finance - FP&A,Finance,2025-06-02 10:13:23,26
-9068b4b3-d93,ddf1508a-742,Finance - Procurement,Finance,2025-07-21 10:13:23,46
-ff8d51d7-eaa,ddf1508a-742,HR - L&D,HR,2025-04-17 10:13:23,50
-27ef1096-b7c,ddf1508a-742,HR - People Ops,HR,2025-04-18 10:13:23,78
-3ccb5671-b77,ddf1508a-742,HR - Recruiting,HR,2025-08-13 10:13:23,39
-fbc3bb64-d92,ddf1508a-742,Legal - Compliance,Legal,2025-09-10 10:13:23,23
-7a561f79-62e,ddf1508a-742,Legal - Legal,Legal,2025-09-07 10:13:23,85
-4bf6542f-8a1,ddf1508a-742,Marketing - Brand,Marketing,2025-03-16 10:13:23,46
-9a138c3a-82b,ddf1508a-742,Marketing - Content,Marketing,2025-08-16 10:13:23,76
-f5bf7d99-7d8,ddf1508a-742,Marketing - Demand Gen,Marketing,2025-04-16 10:13:23,52
-f01d211d-225,ddf1508a-742,Marketing - Events,Marketing,2025-07-15 10:13:23,70
-c14ea585-522,ddf1508a-742,Marketing - Product Marketing,Marketing,2025-07-16 10:13:23,54
-0426cfba-f6b,ddf1508a-742,Operations - Data Ops,Operations,2025-05-08 10:13:23,21
-c70c8716-7b5,ddf1508a-742,Operations - IT,Operations,2025-05-04 10:13:23,58
-a23f8204-7cc,ddf1508a-742,Operations - Rev Ops,Operations,2025-07-05 10:13:23,34
-2cd2869c-008,ddf1508a-742,Product - Analytics,Product,2025-09-22 10:13:23,49
-46b21eaa-efa,ddf1508a-742,Product - Core Product,Product,2025-05-18 10:13:23,60
-47315dd4-843,ddf1508a-742,Product - Growth,Product,2025-07-08 10:13:23,77
-217da21a-2fe,ddf1508a-742,Product - Platform,Product,2025-03-21 10:13:23,91
-bde22508-5f7,ddf1508a-742,Sales - Enterprise,Sales,2025-05-17 10:13:23,54
-87014924-42c,ddf1508a-742,Sales - Partnerships,Sales,2025-05-12 10:13:23,62
-9e13efb2-976,ddf1508a-742,Sales - SDR,Sales,2025-04-29 10:13:23,73
-330edaf7-32b,ddf1508a-742,Sales - SMB,Sales,2025-08-18 10:13:23,72
-e5c8351a-36b,ddf1508a-742,Sales - Solutions,Sales,2025-06-15 10:13:23,82
+314522f0-ed7,4cfa358e-8a9,Customer Success - Onboarding,Customer Success,2025-08-23 10:44:25,50
+5ecf0e3b-d3a,4cfa358e-8a9,Customer Success - Success,Customer Success,2025-06-04 10:44:25,80
+52d4b81c-a96,4cfa358e-8a9,Customer Success - Support Tier 1,Customer Success,2025-04-13 10:44:25,99
+568b6116-e50,4cfa358e-8a9,Customer Success - Support Tier 2,Customer Success,2025-09-25 10:44:25,39
+a5f74f10-a20,4cfa358e-8a9,Design - Brand Design,Design,2025-05-23 10:44:25,80
+e8dcc6a9-a01,4cfa358e-8a9,Design - Product Design,Design,2025-05-20 10:44:25,95
+4c9bafe6-456,4cfa358e-8a9,Design - UX Research,Design,2025-04-14 10:44:25,43
+79765fd4-335,4cfa358e-8a9,Engineering - Backend,Engineering,2025-05-20 10:44:25,69
+b1a9f867-150,4cfa358e-8a9,Engineering - Data,Engineering,2025-08-22 10:44:25,66
+23e640bc-f1f,4cfa358e-8a9,Engineering - DevOps,Engineering,2025-06-05 10:44:25,61
+9a9b2089-024,4cfa358e-8a9,Engineering - Frontend,Engineering,2025-04-19 10:44:25,57
+2a494f63-c27,4cfa358e-8a9,Engineering - Mobile,Engineering,2025-09-13 10:44:25,20
+b5267316-df0,4cfa358e-8a9,Engineering - Platform,Engineering,2025-09-21 10:44:25,73
+a5537c89-c20,4cfa358e-8a9,Engineering - QA,Engineering,2025-08-20 10:44:25,91
+22613fd8-05c,4cfa358e-8a9,Engineering - Security,Engineering,2025-06-19 10:44:25,94
+00e968f2-09f,4cfa358e-8a9,Finance - Accounting,Finance,2025-04-21 10:44:25,86
+e6a39f9b-086,4cfa358e-8a9,Finance - FP&A,Finance,2025-06-02 10:44:25,26
+84e55c8e-298,4cfa358e-8a9,Finance - Procurement,Finance,2025-07-21 10:44:25,46
+9c89657d-420,4cfa358e-8a9,HR - L&D,HR,2025-04-17 10:44:25,50
+888e1b08-cc7,4cfa358e-8a9,HR - People Ops,HR,2025-04-18 10:44:25,78
+56c789db-5d1,4cfa358e-8a9,HR - Recruiting,HR,2025-08-13 10:44:25,39
+f677c0c5-d6e,4cfa358e-8a9,Legal - Compliance,Legal,2025-09-10 10:44:25,23
+68be1c56-618,4cfa358e-8a9,Legal - Legal,Legal,2025-09-07 10:44:25,85
+78c75dd0-208,4cfa358e-8a9,Marketing - Brand,Marketing,2025-03-16 10:44:25,46
+a9919f7d-873,4cfa358e-8a9,Marketing - Content,Marketing,2025-08-16 10:44:25,76
+5b42be4c-e8d,4cfa358e-8a9,Marketing - Demand Gen,Marketing,2025-04-16 10:44:25,52
+ba0ac66e-0d6,4cfa358e-8a9,Marketing - Events,Marketing,2025-07-15 10:44:25,70
+794ca3dc-73d,4cfa358e-8a9,Marketing - Product Marketing,Marketing,2025-07-16 10:44:25,54
+c4530905-ce4,4cfa358e-8a9,Operations - Data Ops,Operations,2025-05-08 10:44:25,21
+9fba15fd-285,4cfa358e-8a9,Operations - IT,Operations,2025-05-04 10:44:25,58
+fd650c1f-7a2,4cfa358e-8a9,Operations - Rev Ops,Operations,2025-07-05 10:44:25,34
+9b5c382b-85b,4cfa358e-8a9,Product - Analytics,Product,2025-09-22 10:44:25,49
+850a4540-759,4cfa358e-8a9,Product - Core Product,Product,2025-05-18 10:44:25,60
+68b7ca6b-dd8,4cfa358e-8a9,Product - Growth,Product,2025-07-08 10:44:25,77
+69086458-8c3,4cfa358e-8a9,Product - Platform,Product,2025-03-21 10:44:25,91
+0ba7d8db-ea0,4cfa358e-8a9,Sales - Enterprise,Sales,2025-05-17 10:44:25,54
+9359a30e-1c0,4cfa358e-8a9,Sales - Partnerships,Sales,2025-05-12 10:44:25,62
+d7f10845-665,4cfa358e-8a9,Sales - SDR,Sales,2025-04-29 10:44:25,73
+eba036c2-b6c,4cfa358e-8a9,Sales - SMB,Sales,2025-08-18 10:44:25,72
+b761bebf-fcf,4cfa358e-8a9,Sales - Solutions,Sales,2025-06-15 10:44:25,82
